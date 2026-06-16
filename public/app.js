@@ -52,8 +52,9 @@ function render(data) {
 
   if (data.waterLevel?.levelM !== undefined) {
     const level = formatLevel(data.waterLevel.levelM);
-    const source = data.waterLevel.fallback ? 'fallbackvärde' : 'SMHI';
-    setText(availabilityDetailEl, `Vattennivå: ${level} m · ${source}`);
+    const assessment = data.waterLevel.availabilityAssessment;
+    const status = assessment?.seasonalStatusShort || assessment?.seasonalStatus || (data.waterLevel.fallback ? 'fallbackvärde' : 'SMHI');
+    setText(availabilityDetailEl, `Vattennivå: ${level} m · ${status}`);
   }
 
   if (data.refillProxy) {
