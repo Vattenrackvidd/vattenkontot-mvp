@@ -125,7 +125,9 @@ app.get('/api/vattenkontot', async (req, res) => {
   let storageError = null;
 
   try {
-    storageSummary = await recordAndSummarizeSydvatten(sydvatten);
+    const saveRequested = String(req.query.source || '').toLowerCase() === 'github-actions'
+      || String(req.query.collect || '').toLowerCase() === 'true';
+    storageSummary = await recordAndSummarizeSydvatten(sydvatten, { shouldSave: saveRequested });
   } catch (error) {
     storageError = error.message || String(error);
     storageSummary = {
@@ -144,7 +146,7 @@ app.get('/api/vattenkontot', async (req, res) => {
 
   return res.json({
     source: 'live-with-smhi-seasonal-hydronu-proxy-and-supabase-storage',
-    note: 'Vombverkets leverans och Vombsjöns vattennivå hämtas live. Påfyllnadsutsikt använder första S-HYPE-proxy: Björkaån/Eggelstad SUBID 103. Supabase används för att samla historik för kommande 24-timmarsmedel.',
+    note: 'Vombverkets leverans och Vombsjöns vattennivå hämtas live. Påfyllnadsutsikt använder första S-HYPE-proxy: Björkaån/Eggelstad SUBID 103. Supabase används för historik. Nya avläsningar sparas bara när API:t anropas av schemalagd insamling, inte vid vanlig sidvisning.',
     dataQuality: use24hAverage
       ? 'Förbrukningstakt baseras på rullande 24-timmarsmedel av sparade Sydvatten-avläsningar. Tillgång klassas mot säsongspercentiler för Vombsjön övre. Påfyllnadsutsikt är första trendproxy, inte slutlig säsongsnormal tillrinningsklassning.'
       : 'Förbrukningstakt är fortfarande senaste avlästa Vombverket-värde. Supabase samlar historik för rullande 24-timmarsmedel. Tillgång klassas mot säsongspercentiler för Vombsjön övre. Påfyllnadsutsikt är första trendproxy, inte slutlig säsongsnormal tillrinningsklassning.',

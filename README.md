@@ -75,3 +75,18 @@ Testa API:
 ```text
 http://localhost:3000/api/vattenkontot
 ```
+
+
+## v0.5.1 Automatisk insamling
+
+Projektet innehåller en GitHub Action i `.github/workflows/collect-sydvatten.yml` som anropar `/api/vattenkontot` en gång per timme. Varje anrop gör att API:t hämtar Vombverkets senaste leverans och sparar en rad i Supabase-tabellen `sydvatten_readings`, förutsatt att `SUPABASE_URL` och `SUPABASE_SERVICE_KEY` är konfigurerade i Render.
+
+Workflowen kan även köras manuellt från fliken **Actions** i GitHub via **Run workflow**.
+
+
+## v0.5.2 - säkrare insamling
+
+Vanliga besök på `/api/vattenkontot` är nu läsläge och sparar inte nya rader i Supabase.
+Nya Sydvatten-avläsningar sparas när API:t anropas med `?source=github-actions` via workflowet `.github/workflows/collect-sydvatten.yml`, eller manuellt med `?collect=true`.
+
+Detta minskar risken att databasen fylls med extra rader när appen laddas om eller när någon tittar på API:t.
