@@ -9,6 +9,8 @@ const refillEl = document.getElementById('refillValue');
 const consumptionEl = document.getElementById('consumptionValue');
 const updatedAtEl = document.getElementById('updatedAt');
 const consumptionDetailEl = document.getElementById('consumptionDetail');
+const availabilityDetailEl = document.getElementById('availabilityDetail');
+const refillDetailEl = document.getElementById('refillDetail');
 const quadrants = [...document.querySelectorAll('.quadrant')];
 
 function capitalize(value) {
@@ -18,6 +20,11 @@ function capitalize(value) {
 
 function setText(el, value) {
   if (el) el.textContent = value;
+}
+
+function formatLevel(levelM) {
+  if (levelM === undefined || levelM === null) return null;
+  return Number(levelM).toLocaleString('sv-SE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function render(data) {
@@ -38,9 +45,27 @@ function render(data) {
   setText(availabilityEl, capitalize(data.availability));
   setText(refillEl, capitalize(data.refillOutlook));
   setText(consumptionEl, capitalize(data.consumptionRateClass));
+
   if (data.currentLps) {
     setText(consumptionDetailEl, `Senast avläst: ${data.currentLps} l/s`);
   }
+
+  if (data.waterLevel?.levelM !== undefined) {
+    const level = formatLevel(data.waterLevel.levelM);
+    const source = data.waterLevel.fallback ? 'fallbackvärde' : 'SMHI';
+    setText(availabilityDetailEl, `Vattennivå: ${level} m · ${source}`);
+  }
+
+  if (data.refillProxy) {
+    const mean = data.refillProxy.forecastMean10d;
+    const current = data.refillProxy.currentModelFlow;
+    if (mean !== undefined && current !== undefined) {
+      setText(refillDetailEl, `SUBID ${data.refillProxy.subid}: ${current} → ${mean} m³/s`);
+    } else {
+      setText(refillDetailEl, `SUBID ${data.refillProxy.subid}: ${data.refillProxy.basis || 'proxy'}`);
+    }
+  }
+
   setText(updatedAtEl, `Senast uppdaterad ${data.updatedAt}`);
 
   quadrants.forEach((q) => q.classList.toggle('active', q.dataset.key === data.waterSituationKey));

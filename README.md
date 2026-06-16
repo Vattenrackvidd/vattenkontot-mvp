@@ -2,13 +2,19 @@
 
 Detta är en fungerande MVP för Vattenkontot.
 
-Version 0.3 gör tre saker:
+Version 0.4 gör fyra saker:
 
 1. Visar en estetisk appvy i webbläsaren.
 2. Hämtar Vombverkets senaste avlästa leverans från Sydvattens publika endpoint.
-3. Använder leveransen som aktuell förbrukningstakt i liter per sekund.
+3. Hämtar aktuell vattennivå i Vombsjön från SMHI, station Vombsjön övre, station 2018.
+4. Hämtar första S-HYPE/HydroNu-proxy för påfyllnadsutsikt: Björkaån/Eggelstad, SUBID 103.
 
-Tillgång och påfyllnadsutsikt är fortfarande prototypvärden i denna version. Nästa steg är att koppla SMHI:s vattennivå för Vombsjön.
+## Viktigt om v0.4
+
+- Förbrukningstakt är fortfarande senaste avlästa Vombverket-värde, inte rullande 24-timmarsmedel.
+- Tillgång klassas med en enkel första prototypregel: stor om nivån ligger över P5 + buffert.
+- Påfyllnadsutsikten är en första trendproxy för Björkaån/Eggelstad, inte slutlig samlad tillrinning till Vombsjön.
+- Slutlig modell bör senare använda samlad tillrinning för Björkaån, Torpsbäcken, Borstbäcken och lokal tillrinning.
 
 ## Kör lokalt
 
@@ -29,7 +35,7 @@ http://localhost:3000
 http://localhost:3000/api/vattenkontot
 ```
 
-API:t returnerar livevärde för Vombverkets leverans om Sydvattens endpoint svarar.
+API:t returnerar livevärden om externa källor svarar. Om en datakälla inte svarar använder prototypen fallback för just den komponenten.
 
 ## Tvinga testdata
 
@@ -37,7 +43,7 @@ API:t returnerar livevärde för Vombverkets leverans om Sydvattens endpoint sva
 http://localhost:3000/api/vattenkontot?source=test
 ```
 
-Du kan också testa andra kombinationer med query-parametrar:
+Du kan också testa andra kombinationer:
 
 ```text
 http://localhost:3000/api/vattenkontot?source=test&availability=liten&refillOutlook=dålig&currentLps=700&normalLps=600
@@ -52,12 +58,23 @@ Tillåtna värden:
 - `normalLps`: normal förbrukningstakt i liter per sekund
 - `householdCount`: standard är 200000
 
-## Viktig metodnotis
+## Miljövariabler
 
-I v0.3 är förbrukningstakt Sydvattens senaste avlästa värde för Vombverket. Slutmålet är att använda ett rullande 24-timmarsmedel när appen har lagring för historiska avläsningar.
+Normalt behövs inga miljövariabler på Render. Följande kan användas för att ändra prototypregler:
+
+```text
+HOUSEHOLD_COUNT=200000
+TEST_NORMAL_LPS=600
+P5_LEVEL_M=18.73
+P5_BUFFER_M=0.20
+REFILL_PROXY_SUBID=103
+SMHI_LEVEL_UNIT=cm
+```
 
 ## Nästa steg
 
-- Koppla SMHI:s vattennivå för Vombsjön.
-- Koppla S-HYPE-påfyllnadsutsikt.
-- Skapa daglig lagring av resultatet.
+- Validera att SMHI-värdet visas korrekt i appen.
+- Validera att HydroNu/S-HYPE-proxyn faktiskt hämtas från SUBID 103.
+- Identifiera fler relevanta SUBID/AROID för Torpsbäcken, Borstbäcken och lokal tillrinning.
+- Skapa lagring för Sydvatten-avläsningar.
+- Beräkna rullande 24-timmarsmedel för förbrukningstakt.

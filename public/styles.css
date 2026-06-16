@@ -42,7 +42,7 @@ body {
 }
 
 .app {
-  min-height: 820px;
+  min-height: 900px;
   background: linear-gradient(180deg, #fbfdff 0%, #f6fbff 100%);
   border-radius: 34px;
   padding: 28px 20px 22px;
@@ -201,4 +201,12 @@ h2 { margin: 0; font-size: 26px; line-height: 1.14; letter-spacing: -0.02em; }
   .phone-shell { width: 100%; min-height: 100vh; border-radius: 0; padding: 0; background: transparent; }
   .app { min-height: 100vh; border-radius: 0; }
   .info-grid { grid-template-columns: 1fr; }
+}
+.method-note {
+  margin-top: 10px !important;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  color: var(--muted) !important;
+  font-size: 12px !important;
+  line-height: 1.35;
 }

@@ -1,7 +1,7 @@
 {
   "name": "vattenkontot-mvp",
-  "version": "0.1.0",
-  "description": "Vattenkontot MVP - dygnsvis rekommendation baserad på tillgång, påfyllnadsutsikt och förbrukningstakt.",
+  "version": "0.4.0",
+  "description": "Vattenkontot MVP - dygnsvis rekommendation med Sydvatten, SMHI nivå och första S-HYPE-proxy.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
