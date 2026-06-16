@@ -150,6 +150,15 @@ h2 { margin: 0; font-size: 26px; line-height: 1.14; letter-spacing: -0.02em; }
 .metric-availability strong { color: var(--blue); }
 .metric-refill strong { color: var(--orange); }
 .metric-consumption strong { color: var(--red); }
+.metric-detail {
+  display: block;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
 .metric-refill { background: linear-gradient(180deg, #fff, var(--orange-soft)); }
 .metric-consumption { background: linear-gradient(180deg, #fff, var(--red-soft)); }
 

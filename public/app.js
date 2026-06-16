@@ -8,6 +8,7 @@ const availabilityEl = document.getElementById('availabilityValue');
 const refillEl = document.getElementById('refillValue');
 const consumptionEl = document.getElementById('consumptionValue');
 const updatedAtEl = document.getElementById('updatedAt');
+const consumptionDetailEl = document.getElementById('consumptionDetail');
 const quadrants = [...document.querySelectorAll('.quadrant')];
 
 function capitalize(value) {
@@ -37,6 +38,9 @@ function render(data) {
   setText(availabilityEl, capitalize(data.availability));
   setText(refillEl, capitalize(data.refillOutlook));
   setText(consumptionEl, capitalize(data.consumptionRateClass));
+  if (data.currentLps) {
+    setText(consumptionDetailEl, `Senast avläst: ${data.currentLps} l/s`);
+  }
   setText(updatedAtEl, `Senast uppdaterad ${data.updatedAt}`);
 
   quadrants.forEach((q) => q.classList.toggle('active', q.dataset.key === data.waterSituationKey));
