@@ -1,0 +1,18 @@
+name: Collect Sydvatten reading
+
+on:
+  schedule:
+    - cron: "7 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping-vattenkontot-api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Vattenkontot API
+        run: |
+          curl --fail --silent --show-error \
+            "https://vattenkontot-mvp.onrender.com/api/vattenkontot?source=github-actions&ts=$(date +%s)" \
+            > /tmp/vattenkontot-response.json
+          echo "API response saved."
+          head -c 1000 /tmp/vattenkontot-response.json
