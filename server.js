@@ -5,6 +5,7 @@ const { fetchSydvattenProduction } = require('./lib/fetchSydvatten');
 const { fetchSmhiLevel } = require('./lib/fetchSmhiLevel');
 const { fetchHydroNuPoint, DEFAULT_REFILL_SUBID } = require('./lib/fetchHydroNu');
 const { classifySeasonalAvailability } = require('./lib/classifyAvailability');
+const { recordAndSummarizeSydvatten } = require('./lib/supabaseReadings');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -117,16 +118,41 @@ app.get('/api/vattenkontot', async (req, res) => {
   const refillOutlook = req.query.refillOutlook || refillProxy.refillOutlook;
   const latestFetch = sydvatten.fetchedAt || waterLevel.fetchedAt || refillProxy.fetchedAt || new Date().toISOString();
 
-  const data = calculateVattenkontot(getBaseInput(req, sydvatten.vomb, latestFetch, availability, refillOutlook));
+  let storageSummary = {
+    storage: { enabled: false, status: 'not_attempted' },
+    stats24h: { enabled: false, status: 'not_attempted' }
+  };
+  let storageError = null;
+
+  try {
+    storageSummary = await recordAndSummarizeSydvatten(sydvatten);
+  } catch (error) {
+    storageError = error.message || String(error);
+    storageSummary = {
+      storage: { enabled: true, status: 'error', save: { saved: false, reason: storageError } },
+      stats24h: { enabled: true, status: 'error', message: storageError }
+    };
+  }
+
+  const use24hAverage = storageSummary.stats24h?.hasFullDay && storageSummary.stats24h?.average24hLps;
+  const currentLpsForRecommendation = use24hAverage
+    ? storageSummary.stats24h.average24hLps
+    : sydvatten.vomb;
+  const consumptionMeasurement = use24hAverage ? 'rolling-24h-average' : 'latest-reading';
+
+  const data = calculateVattenkontot(getBaseInput(req, currentLpsForRecommendation, latestFetch, availability, refillOutlook));
 
   return res.json({
-    source: 'live-with-smhi-seasonal-and-hydronu-proxy',
-    note: 'Vombverkets leverans och Vombsjöns vattennivå hämtas live. Påfyllnadsutsikt använder första S-HYPE-proxy: Björkaån/Eggelstad SUBID 103. Detta är ännu inte total tillrinning till Vombsjön.',
-    dataQuality: 'Förbrukningstakt är senaste avlästa Vombverket-värde, inte rullande 24-timmarsmedel. Tillgång klassas mot säsongspercentiler för Vombsjön övre. Påfyllnadsutsikt är första trendproxy, inte slutlig säsongsnormal tillrinningsklassning.',
+    source: 'live-with-smhi-seasonal-hydronu-proxy-and-supabase-storage',
+    note: 'Vombverkets leverans och Vombsjöns vattennivå hämtas live. Påfyllnadsutsikt använder första S-HYPE-proxy: Björkaån/Eggelstad SUBID 103. Supabase används för att samla historik för kommande 24-timmarsmedel.',
+    dataQuality: use24hAverage
+      ? 'Förbrukningstakt baseras på rullande 24-timmarsmedel av sparade Sydvatten-avläsningar. Tillgång klassas mot säsongspercentiler för Vombsjön övre. Påfyllnadsutsikt är första trendproxy, inte slutlig säsongsnormal tillrinningsklassning.'
+      : 'Förbrukningstakt är fortfarande senaste avlästa Vombverket-värde. Supabase samlar historik för rullande 24-timmarsmedel. Tillgång klassas mot säsongspercentiler för Vombsjön övre. Påfyllnadsutsikt är första trendproxy, inte slutlig säsongsnormal tillrinningsklassning.',
     warnings: {
       sydvatten: errorMessage(sydvattenResult),
       smhiLevel: errorMessage(smhiLevelResult),
-      hydroNu: errorMessage(hydroNuResult)
+      hydroNu: errorMessage(hydroNuResult),
+      supabase: storageError
     },
     sydvatten: {
       sourceUrl: sydvatten.sourceUrl,
@@ -134,6 +160,9 @@ app.get('/api/vattenkontot', async (req, res) => {
       vombLps: sydvatten.vomb,
       ringLps: sydvatten.ring
     },
+    consumptionMeasurement,
+    consumptionStorage: storageSummary.storage,
+    consumptionStats24h: storageSummary.stats24h,
     waterLevel: {
       ...waterLevel,
       availabilityClassification: availability,

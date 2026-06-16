@@ -1,7 +1,7 @@
 {
   "name": "vattenkontot-mvp",
-  "version": "0.4.0",
-  "description": "Vattenkontot MVP - dygnsvis rekommendation med Sydvatten, SMHI nivå och första S-HYPE-proxy.",
+  "version": "0.5.0",
+  "description": "Vattenkontot MVP - dygnsvis rekommendation med Sydvatten, SMHI, S-HYPE-proxy och Supabase-lagring.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -11,6 +11,7 @@
     "node": ">=18"
   },
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "@supabase/supabase-js": "^2.45.4"
   }
 }

@@ -212,3 +212,6 @@ h2 { margin: 0; font-size: 26px; line-height: 1.14; letter-spacing: -0.02em; }
   font-size: 12px !important;
   line-height: 1.35;
 }
+.metric-detail span {
+  display: block;
+}

@@ -46,8 +46,20 @@ function render(data) {
   setText(refillEl, capitalize(data.refillOutlook));
   setText(consumptionEl, capitalize(data.consumptionRateClass));
 
-  if (data.currentLps) {
-    setText(consumptionDetailEl, `Senast avläst: ${data.currentLps} l/s`);
+  if (data.sydvatten?.vombLps || data.currentLps) {
+    const latestLps = Math.round(data.sydvatten?.vombLps || data.currentLps);
+    const stats = data.consumptionStats24h;
+    let statsText = '24h-medel: samlas in';
+
+    if (stats?.status === 'ready' && stats.average24hLps) {
+      statsText = `24h-medel: ${stats.average24hLps} l/s · används`;
+    } else if (stats?.enabled && stats?.readingCount !== undefined) {
+      statsText = `24h-medel: samlas in (${stats.readingCount} värden)`;
+    } else if (stats?.status === 'not_configured') {
+      statsText = '24h-medel: ej aktiverat';
+    }
+
+    consumptionDetailEl.innerHTML = `<span>Senast avläst: ${latestLps} l/s</span><span>${statsText}</span>`;
   }
 
   if (data.waterLevel?.levelM !== undefined) {
