@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vattenkontot</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main class="phone-shell" aria-label="Vattenkontot appvy">
+    <section class="app">
+      <header class="app-header">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">💧</div>
+          <div>
+            <h1>Vattenkontot</h1>
+            <p>Dygnsuppdaterad rekommendation</p>
+          </div>
+        </div>
+        <button class="menu" aria-label="Meny">☰</button>
+      </header>
+
+      <section class="hero-card" id="heroCard">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+          <p class="eyebrow">Dagens situation</p>
+          <h2 id="situationTitle">Situation 4 –<br/>Förebyggande sparläge</h2>
+          <p class="combo" id="situationCombo">Stor tillgång · Dålig påfyllnadsutsikt · Hög förbrukningstakt</p>
+
+          <div class="recommendation-card">
+            <div class="recommendation-icon" aria-hidden="true">💧</div>
+            <div class="recommendation-text">
+              <p class="recommendation-main" id="recommendationMain">Minska med cirka <strong>50</strong> liter</p>
+              <p class="recommendation-sub" id="recommendationSub">per hushåll idag</p>
+              <p class="recommendation-support" id="recommendationSupport">Om alla hjälps åt räcker små minskningar långt.</p>
+            </div>
+            <span class="status-pill" id="statusPill">Över dagens mål</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="metric-grid" aria-label="Tre huvudmått">
+        <article class="metric-card metric-availability">
+          <div class="metric-icon">〰️</div>
+          <p>Tillgång</p>
+          <strong id="availabilityValue">Stor</strong>
+        </article>
+        <article class="metric-card metric-refill">
+          <div class="metric-icon">🌧️</div>
+          <p>Påfyllnadsutsikt</p>
+          <strong id="refillValue">Dålig</strong>
+        </article>
+        <article class="metric-card metric-consumption">
+          <div class="metric-icon">🚰</div>
+          <p>Förbrukningstakt</p>
+          <strong id="consumptionValue">Hög</strong>
+        </article>
+      </section>
+
+      <section class="info-grid">
+        <article class="info-card interpretation">
+          <h3>Så tolkas läget</h3>
+          <div class="step">
+            <span>1</span>
+            <p>Tillgång + påfyllnadsutsikt<br><strong>= vattenläge</strong></p>
+          </div>
+          <div class="arrow">↓</div>
+          <div class="step">
+            <span>2</span>
+            <p>Vattenläge + förbrukningstakt<br><strong>= rekommendation</strong></p>
+          </div>
+        </article>
+
+        <article class="info-card water-state">
+          <h3>Vattenläge</h3>
+          <div class="quadrants" id="quadrants">
+            <div class="quadrant tryggt" data-key="tryggt">Tryggt läge</div>
+            <div class="quadrant forebyggande" data-key="forebyggande">Förebyggande sparläge</div>
+            <div class="quadrant pa-vag-upp" data-key="pa-vag-upp">På väg upp</div>
+            <div class="quadrant spara-nu" data-key="spara-nu">Spara nu</div>
+          </div>
+        </article>
+      </section>
+
+      <section class="data-card">
+        <div class="data-icon" aria-hidden="true">◎</div>
+        <div>
+          <h3>Datagrund</h3>
+          <p><span class="dot blue"></span><strong>Tillgång:</strong> vattennivå i Vombsjön</p>
+          <p><span class="dot orange"></span><strong>Påfyllnadsutsikt:</strong> S-HYPE tillrinning</p>
+          <p><span class="dot red"></span><strong>Förbrukningstakt:</strong> Vombverkets totala leverans</p>
+        </div>
+      </section>
+
+      <footer class="app-footer">
+        <span>◷</span>
+        <p id="updatedAt">Senast uppdaterad 08:30</p>
+      </footer>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
